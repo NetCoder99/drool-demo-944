@@ -1,0 +1,20 @@
+global org.example.model.Fare     rideFare;
+global org.example.model.TaxiRide taxiRide;
+
+dialect  "mvel"
+
+rule "Calculate Taxi Fare - Scenario 3"
+    when
+        taxiRideInstance:TaxiRide(isNightSurcharge == true && distanceInMile >= 10 && distanceInMile < 20);
+    then
+      	rideFare.setNightSurcharge(2);
+       	rideFare.setRideFare(80);
+end
+
+rule "Calculate Taxi Fare - Scenario 4"
+    when
+        taxiRideInstance:TaxiRide(isNightSurcharge == true && distanceInMile >= 20);
+    then
+      	rideFare.setNightSurcharge(3);
+       	rideFare.setRideFare(90);
+end
