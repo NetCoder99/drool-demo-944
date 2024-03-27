@@ -3,7 +3,21 @@ global org.example.model.TaxiRide taxiRide;
 
 dialect  "mvel"
 
+// from row 1
+rule "Calculate Taxi Fare - Scenario 1"
+    salience 1
+    activation-group "myGroup1"
+    when
+        eval (taxiRideInstance.getCustomerName().length > 10 && taxiRideInstance.getDistanceInMile() > "1000")
+    then
+      	rideFare.setNightSurcharge(99);
+       	rideFare.setRideFare(9000);
+end
+
 rule "Calculate Taxi Fare - Scenario 3"
+    // from row 3
+    salience 10
+    activation-group "myGroup1"
     when
         taxiRideInstance:TaxiRide(isNightSurcharge == true && distanceInMile >= 10 && distanceInMile < 20);
     then
@@ -11,9 +25,13 @@ rule "Calculate Taxi Fare - Scenario 3"
        	rideFare.setRideFare(80);
 end
 
+// from row 4
 rule "Calculate Taxi Fare - Scenario 4"
+    salience 10
+    activation-group "myGroup1"
     when
         taxiRideInstance:TaxiRide(isNightSurcharge == true && distanceInMile >= 20);
+        eval (taxiRideInstance.getCustomerName().length > 10)
     then
       	rideFare.setNightSurcharge(3);
        	rideFare.setRideFare(90);

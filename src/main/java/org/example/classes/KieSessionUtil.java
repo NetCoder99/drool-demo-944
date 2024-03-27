@@ -2,12 +2,24 @@ package org.example.classes;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import com.google.gson.Gson;
+import org.drools.drl.ast.descr.PackageDescr;
+import org.drools.drl.parser.DroolsError;
+import org.drools.drl.parser.DroolsParserException;
 import org.example.model.RuleDefinition;
 import org.kie.api.KieServices;
+
 import org.drools.decisiontable.DecisionTableProviderImpl;
+import org.drools.drl.parser.DrlParser;
+
 import org.kie.api.builder.*;
 import org.kie.api.definition.KiePackage;
 import org.kie.api.definition.rule.Rule;
@@ -69,6 +81,13 @@ public class KieSessionUtil {
         }
     }
 
+    public static List<String> GetDrlString(String drl_file_name) throws IOException {
+        Path filePath = Paths.get(drl_file_name);
+        Charset charset = StandardCharsets.UTF_8;
+        List<String> lines = Files.readAllLines(filePath, charset);
+        return lines;
+    }
+
     public String getDrlFromExcel(String excelFile) {
         DecisionTableConfiguration configuration = KnowledgeBuilderFactory.newDecisionTableConfiguration();
         configuration.setInputType(DecisionTableInputType.XLS);
@@ -92,6 +111,18 @@ public class KieSessionUtil {
             }
         }
         return rtnList;
+    }
+
+    public static PackageDescr GetDrlParts(String input) throws DroolsParserException {
+        DrlParser drlParser = new DrlParser();
+        PackageDescr descr = drlParser.parse(true, input);
+        if (drlParser.getErrors().size() > 0) {
+            for (DroolsError drlParseError : drlParser.getErrors()) {
+                System.out.println(gson.toJson(drlParseError.getMessage()));
+            }
+            throw new DroolsParserException("Parse errors detected");
+        }
+        return descr;
     }
 
 //    private void getKieRepository() {
